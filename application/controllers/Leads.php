@@ -11,12 +11,33 @@ class Leads extends CI_Controller {
 	public function index()
 	{
     $data["leads"] = $this->Lead->all_leads();
+    $data["total"] = count($this->Lead->all_leads());
 		$this->load->view('leads', $data);
 	}
 
   public function get_leads() {
     $info = $this->input->post();
-    $data["leads"] = $this->Lead->get_leads($info);
+    if(empty($info["page_number"]))
+    {
+      $data["leads"] = $this->Lead->leads_count($info);
+      $data["total"] = count($this->Lead->leads_count($info));
+
+    }
+    if(empty($info["page_number"]) && !empty($info["name"]))
+    {
+      $data["leads"] = $this->Lead->leads_count($info);
+      $data["total"] = count($this->Lead->leads_count($info));
+    }
+    if(!empty($info["page_number"]) && !empty($info["name"]))
+    {
+      $data["leads"] = $this->Lead->get_leads($info);
+      $data["total"] = count($this->Lead->leads_count($info));
+    }
+    if(!empty($info["page_number"]) && !empty($info["from"]))
+    {
+      $data["leads"] = $this->Lead->get_leads($info);
+      $data["total"] = count($this->Lead->leads_count($info));
+    }
     $this->load->view("/partials/table", $data);
   }
 }
